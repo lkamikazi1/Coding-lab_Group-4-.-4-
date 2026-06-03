@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#Group 4 - Member 4
+#Name - Lizza Kamikazi
+#Role - The archivist
+
 archive_logs() {
 	if [ ! -d "active_logs" ]; then
 		echo "No active_logs directory found."

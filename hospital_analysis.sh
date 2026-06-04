@@ -3,15 +3,15 @@
 # KNH Hospital Analysis Script
 # hospital_analysis.sh
 #
-# Member 5 (Clinical Analyst) : process_vitals()
-# Member 6 (Facility Auditor) : water_audit()
+# Member 5 (Olga) : The clinical analyst
+# Member 6 (Kambare) : The facility auditor
 # ============================================================
 
 ACTIVE_LOGS="./active_logs"
 REPORTS="./reports"
-HEART_RATE_LOG="$ACTIVE_LOGS/heart_rate.log"
-TEMP_LOG="$ACTIVE_LOGS/temperature.log"
-WATER_LOG="$ACTIVE_LOGS/water_usage.log"
+HEART_RATE_LOG="$ACTIVE_LOGS/heart_rate_log.log"
+TEMP_LOG="$ACTIVE_LOGS/temperature_log.log"
+WATER_LOG="$ACTIVE_LOGS/water_usage_log.log"
 CRITICAL_ALERTS="$REPORTS/critical_alerts.txt"
 
 process_vitals() {

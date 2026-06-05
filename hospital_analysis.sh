@@ -60,38 +60,29 @@ process_vitals() {
 }
 
 water_audit() {
-    echo "============================================"
-    echo "  [Member 6] Running Facility Water Audit  "
-    echo "============================================"
+    echo "=============================================="
+    echo "  [M6] ICU Water Reserve - Facility Audit"
+    echo "=============================================="
+    echo ""
+
+    # Verify the water log exists before proceeding
     if [ ! -f "$WATER_LOG" ]; then
-        echo "[ERROR] Water usage log not found: $WATER_LOG"
+        echo "[ERROR] Water log not found: $WATER_LOG"
+        echo "        Start the Python engine first."
         return 1
     fi
-    awk -F',' '
-        /ICU_WATER_RESERVE/ {
-            sum += $3
-            count++
-        }
-        END {
-            if (count == 0) {
-                printf "\n  [WARNING] No ICU_WATER_RESERVE readings found.\n"
-            } else {
-                avg = sum / count
-                printf "\n"
-                printf "  ╔══════════════════════════════════════════╗\n"
-                printf "  ║       KNH — ICU WATER USAGE REPORT       ║\n"
-                printf "  ╠══════════════════════════════════════════╣\n"
-                printf "  ║  Device        : ICU_WATER_RESERVE        ║\n"
-                printf "  ║  Readings Taken: %-4d                     ║\n", count
-                printf "  ║  Total Usage   : %-8.2f Liters          ║\n", sum
-                printf "  ║  Average Usage : %-8.2f Liters          ║\n", avg
-                printf "  ╚══════════════════════════════════════════╝\n"
-                printf "\n"
-            }
-        }
-    ' "$WATER_LOG"
-    echo "[SUCCESS] Water audit complete."
+
+    # Filter only ICU_WATER_RESERVE rows from the water log.
+    # The log contains two devices; we isolate the one we care about.
+    echo "[INFO] Filtering ICU_WATER_RESERVE entries..."
+    local icu_rows
+    icu_rows=$(grep "ICU_WATER_RESERVE" "$WATER_LOG")
+
+    echo "[INFO] Sample of ICU rows found:"
+    echo "$icu_rows" | head -5
     echo ""
+
+    echo "[INFO] Commit 1 complete - grep filter working."
 }
 
 # =====================================

@@ -137,39 +137,45 @@ water_audit() {
     fi
 
     echo "[INFO] awk results: avg=$avg  count=$count  max=$max_val  min=$min_val  high=$high_count"
+
+# ── STATUS CLASSIFICATION ─────────────────────────────────
+    # Convert floating-point average to integer for comparison
+    # (bash arithmetic only handles integers).
+    local avg_int status_label
+    avg_int=$(printf "%.0f" "$avg")
+
+    if   [ "$count" -eq 0 ];       then status_label="[?] NO DATA - No ICU readings in log yet"
+    elif [ "$avg_int" -gt 35 ];    then status_label="[!] HIGH CONSUMPTION - Immediate Review Required"
+    elif [ "$avg_int" -gt 25 ];    then status_label="[~] ELEVATED - Monitor Closely"
+    else                                 status_label="[*] NORMAL - Within Acceptable Range"
+    fi
+
+    # ── FORMATTED AUDIT TABLE ─────────────────────────────────
+    # printf "| %-48s |\n" left-aligns the string in a 48-char field.
+    # The border line (50 dashes) plus the two '+' signs totals 52 chars,
+    # matching "| " + 48 chars + " |" = 52 chars — so the box lines up.
+    printf "\n"
+    printf "+--------------------------------------------------+\n"
+    printf "|         KNH WATER USAGE AUDIT REPORT            |\n"
+    printf "+--------------------------------------------------+\n"
+    printf "| %-48s |\n"  " Facility Device   : ICU Water Reserve"
+    printf "| %-48s |\n"  " Audit Timestamp   : $(date '+%Y-%m-%d %H:%M:%S')"
+    printf "+--------------------------------------------------+\n"
+    printf "| %-48s |\n"  " READINGS SUMMARY"
+    printf "| %-48s |\n"  "   Total Readings   : $count"
+    printf "| %-48s |\n"  "   Average Usage    : $avg L/min"
+    printf "| %-48s |\n"  "   Peak Usage       : $max_val L/min"
+    printf "| %-48s |\n"  "   Minimum Usage    : $min_val L/min"
+    printf "+--------------------------------------------------+\n"
+    printf "| %-48s |\n"  " ALERT SUMMARY"
+    printf "| %-48s |\n"  "   HIGH_USAGE Events: $high_count  ($pct_high% of readings)"
+    printf "+--------------------------------------------------+\n"
+    printf "| %-48s |\n"  " STATUS:"
+    printf "| %-48s |\n"  "   $status_label"
+    printf "+--------------------------------------------------+\n"
+    printf "\n"
+
+    echo "[DONE] Water audit complete."
+    echo ""
 }
 
-# =====================================
-# Execution Logic
-# =====================================
-
-echo "====================================="
-echo "KNH Hospital Analysis System"
-echo "====================================="
-echo "1. Process Critical Vitals"
-echo "2. Water Audit"
-echo "3. Run Both"
-echo "4. Exit"
-echo "====================================="
-
-read -p "Enter your choice (1-4): " choice
-
-case $choice in
-    1)
-        process_vitals
-        ;;
-    2)
-        water_audit
-        ;;
-    3)
-        process_vitals
-        echo
-        water_audit
-        ;;
-    4)
-        echo "Exiting system..."
-        ;;
-    *)
-        echo "Invalid choice. Please enter a number between 1 and 4."
-        ;;
-esac

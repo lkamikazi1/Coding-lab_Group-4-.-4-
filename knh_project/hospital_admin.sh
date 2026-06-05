@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Group 4- Member 1 _ the architect
+# Function: Initialize_system
+# Purporse: Creates the required directories if they dont exist.
+
 initialize_system() {
 	echo "Initializing KNH system environment..."
     if [ ! -d "active_logs" ]; then	    

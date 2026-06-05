@@ -107,3 +107,4 @@ if __name__ == "__main__":
     cmd = sys.argv[1].lower()
     if cmd == "start": start()
     elif cmd == "stop": stop()
+    elif cmd == "stop": stop()

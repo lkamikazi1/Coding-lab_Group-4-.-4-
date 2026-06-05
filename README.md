@@ -5,7 +5,7 @@ This project is to build a secure, permission-governed environment and an analyt
 
 ## Group Memebers and their roles
 -Member 1 (Derrick): The architect
--Member 2 : The security lead
+-Member 2 (Enzo): The security lead
 -Member 3 (Calvin): The orchestrator
 -Member 4 (Lizza): The archivist
 -Memebr 5 (Olga): The clinical anaylyst

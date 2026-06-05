@@ -1,18 +1,15 @@
 #!/bin/bash
-# ============================================================
+#---------------------------------------------
 # KNH Hospital Analysis Script
-# hospital_analysis.sh
-#
-
 # Member 5 (Olga) : The clinical analyst
 # Member 6 (Kambare) : The facility auditor
-# Member 5 (Clinical Analyst) : process_vitals()
+#----------------------------------------------
+
 process_vitals() {
   echo "============================================"
     echo " MEMBER 5 - CLINICAL VITALS ANALYSIS REPORT "
     echo "============================================"
 
-    # Ensure reports directory exists
     if [ ! -d "$REPORTS" ]; then
         mkdir -p "$REPORTS"
     fi
@@ -23,14 +20,12 @@ process_vitals() {
     echo "------------------------------------------------------------" >> "$CRITICAL_ALERTS"
     echo "" >> "$CRITICAL_ALERTS"
 
-    # Check if logs exist
     if [ ! -s "$HEART_RATE_LOG" ] && [ ! -s "$TEMP_LOG" ]; then
         echo "WARNING: No active critical data found in logs." >> "$CRITICAL_ALERTS"
         echo "[INFO] No data available to process."
         return 0
     fi
 
-    # ================= HEART RATE =================
     echo "[HEART RATE — CRITICAL EVENTS]" >> "$CRITICAL_ALERTS"
 
     if [ -f "$HEART_RATE_LOG" ]; then
@@ -51,7 +46,6 @@ process_vitals() {
 
     echo "" >> "$CRITICAL_ALERTS"
 
-    # ================= TEMPERATURE =================
     echo "[TEMPERATURE — CRITICAL EVENTS]" >> "$CRITICAL_ALERTS"
 
     if [ -f "$TEMP_LOG" ]; then
@@ -79,16 +73,14 @@ process_vitals() {
     cat "$CRITICAL_ALERTS"
     echo "---------------"
 }
-# Member 6 (Facility Auditor) : water_audit()
 
-# ============================================================
+# Member 6 (Facility Auditor) : water_audit()
 
 ACTIVE_LOGS="./active_logs"
 REPORTS="./reports"
 HEART_RATE_LOG="$ACTIVE_LOGS/heart_rate_log.log"
 TEMP_LOG="$ACTIVE_LOGS/temperature_log.log"
 WATER_LOG="$ACTIVE_LOGS/water_usage_log.log"
-WATER_LOG="$ACTIVE_LOGS/water_usage7_log.log"
 CRITICAL_ALERTS="$REPORTS/critical_alerts.txt"
 
 process_vitals() {
@@ -100,7 +92,7 @@ process_vitals() {
     fi
     > "$CRITICAL_ALERTS"
     echo "KNH Critical Alerts Report — Generated: $(date '+%Y-%m-%d %H:%M:%S')" >> "$CRITICAL_ALERTS"
-    echo "------------------------------------------------------------" >> "$CRITICAL_ALERTS"
+    echo "--------------------------------------" >> "$CRITICAL_ALERTS"
     echo "" >> "$CRITICAL_ALERTS"
     echo "[HEART RATE — CRITICAL EVENTS]" >> "$CRITICAL_ALERTS"
     if [ ! -f "$HEART_RATE_LOG" ]; then
@@ -133,46 +125,20 @@ process_vitals() {
     echo "--- Preview of $CRITICAL_ALERTS ---"
     cat "$CRITICAL_ALERTS"
     echo "------------------------------------"
-    echo ""
 }
 
-# ==============================================================
 # MEMBER 6: TAPIWANASHE KAMBARE [Facility Auditor]
-#
-# Reads the water usage log, filters rows for ICU_WATER_RESERVE,
-# and uses awk to compute:
-#   - Total readings
-#   - Average, peak, and minimum consumption (L/min)
-#   - Count and percentage of HIGH_USAGE events
-# Prints a formatted audit summary to the screen using printf.
-# ==============================================================
-
 water_audit() {
     echo "=============================================="
     echo "  [M6] ICU Water Reserve - Facility Audit"
     echo "=============================================="
-    echo ""
 
-    # Verify the water log exists before proceeding
     if [ ! -f "$WATER_LOG" ]; then
         echo "[ERROR] Water log not found: $WATER_LOG"
         echo "        Start the Python engine first."
         return 1
     fi
-
-    # ── AWK STATISTICS ENGINE ─────────────────────────────────
-    # Pipe ICU rows into awk for a single-pass calculation.
-    # -F '|'  sets pipe as the field delimiter.
-    #
-    # BEGIN block: initialise all accumulators before reading any line.
-    # Main block:  runs once per row.
-    #   gsub()    trims leading/trailing whitespace from field $3 (value)
-    #             and $4 (status) because the log format is " 38 " not "38".
-    #   val+0     coerces the string to a number.
-    #   Conditionals track max, min, and HIGH_USAGE count.
-    # END block:   prints five space-delimited results on one line so bash
-    #              can read them into variables with 'read'.
-    # ──────────────────────────────────────────────────────────
+    
     local awk_result
     awk_result=$(grep "ICU_WATER_RESERVE" "$WATER_LOG" | awk -F '|' '
     BEGIN {
@@ -203,11 +169,9 @@ water_audit() {
             printf "0.00 0 0.00 0.00 0"
     }')
 
-    # Parse the five space-separated values awk returned into bash variables
     local avg count max_val min_val high_count
     read -r avg count max_val min_val high_count <<< "$awk_result"
 
-    # Compute high-usage percentage in awk (bash can't do floating-point)
     local pct_high="0.0"
     if [ "$count" -gt 0 ]; then
         pct_high=$(awk "BEGIN { printf \"%.1f\", ($high_count / $count) * 100 }")
@@ -215,9 +179,6 @@ water_audit() {
 
     echo "[INFO] awk results: avg=$avg  count=$count  max=$max_val  min=$min_val  high=$high_count"
 
-# ── STATUS CLASSIFICATION ─────────────────────────────────
-    # Convert floating-point average to integer for comparison
-    # (bash arithmetic only handles integers).
     local avg_int status_label
     avg_int=$(printf "%.0f" "$avg")
 
@@ -227,10 +188,6 @@ water_audit() {
     else                                 status_label="[*] NORMAL - Within Acceptable Range"
     fi
 
-    # ── FORMATTED AUDIT TABLE ─────────────────────────────────
-    # printf "| %-48s |\n" left-aligns the string in a 48-char field.
-    # The border line (50 dashes) plus the two '+' signs totals 52 chars,
-    # matching "| " + 48 chars + " |" = 52 chars — so the box lines up.
     printf "\n"
     printf "+--------------------------------------------------+\n"
     printf "|         KNH WATER USAGE AUDIT REPORT            |\n"
@@ -255,11 +212,6 @@ water_audit() {
     echo "[DONE] Water audit complete."
     echo ""
 }
-
-=======
-# =====================================
-# Execution Logic
-# =====================================
 
 echo "====================================="
 echo "KNH Hospital Analysis System"

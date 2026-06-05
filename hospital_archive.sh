@@ -1,10 +1,8 @@
 #!/bin/bash
 
 #--------------------------------------------------------------------------------------------------
-# Group 4 - Member 4
-# Name - Lizza Kamikazi
-# Role: The Archivist
-# Description - This sript moves the current logs from active_logs to archived_logs with a timestamp
+# KNH Hospital Admin Script
+# Member 4 (Lizza): The archivist
 #---------------------------------------------------------------------------------------------------
 
 archive_logs() {

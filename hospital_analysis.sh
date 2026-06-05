@@ -4,6 +4,78 @@
 # hospital_analysis.sh
 #
 # Member 5 (Clinical Analyst) : process_vitals()
+process_vitals() {
+  echo "============================================"
+    echo " MEMBER 5 - CLINICAL VITALS ANALYSIS REPORT "
+    echo "============================================"
+
+    # Ensure reports directory exists
+    if [ ! -d "$REPORTS" ]; then
+        mkdir -p "$REPORTS"
+    fi
+
+    > "$CRITICAL_ALERTS"
+
+    echo "KNH Critical Alerts Report — Generated: $(date '+%Y-%m-%d %H:%M:%S')" >> "$CRITICAL_ALERTS"
+    echo "------------------------------------------------------------" >> "$CRITICAL_ALERTS"
+    echo "" >> "$CRITICAL_ALERTS"
+
+    # Check if logs exist
+    if [ ! -s "$HEART_RATE_LOG" ] && [ ! -s "$TEMP_LOG" ]; then
+        echo "WARNING: No active critical data found in logs." >> "$CRITICAL_ALERTS"
+        echo "[INFO] No data available to process."
+        return 0
+    fi
+
+    # ================= HEART RATE =================
+    echo "[HEART RATE — CRITICAL EVENTS]" >> "$CRITICAL_ALERTS"
+
+    if [ -f "$HEART_RATE_LOG" ]; then
+        critical_hr=$(grep "CRITICAL" "$HEART_RATE_LOG" | awk -F',' '{print $1, $2, $3}')
+
+        hr_count=$(grep -c "CRITICAL" "$HEART_RATE_LOG")
+
+        if [ -z "$critical_hr" ]; then
+            echo "  No critical heart rate events detected." >> "$CRITICAL_ALERTS"
+        else
+            echo "$critical_hr" >> "$CRITICAL_ALERTS"
+        fi
+
+        echo "Total Heart Rate CRITICAL events: $hr_count" >> "$CRITICAL_ALERTS"
+    else
+        echo "[WARNING] Heart rate log not found." >> "$CRITICAL_ALERTS"
+    fi
+
+    echo "" >> "$CRITICAL_ALERTS"
+
+    # ================= TEMPERATURE =================
+    echo "[TEMPERATURE — CRITICAL EVENTS]" >> "$CRITICAL_ALERTS"
+
+    if [ -f "$TEMP_LOG" ]; then
+        critical_temp=$(grep "CRITICAL" "$TEMP_LOG" | awk -F',' '{print $1, $2, $3}')
+
+        temp_count=$(grep -c "CRITICAL" "$TEMP_LOG")
+
+        if [ -z "$critical_temp" ]; then
+            echo "  No critical temperature events detected." >> "$CRITICAL_ALERTS"
+        else
+            echo "$critical_temp" >> "$CRITICAL_ALERTS"
+        fi
+
+        echo "Total Temperature CRITICAL events: $temp_count" >> "$CRITICAL_ALERTS"
+    else
+        echo "[WARNING] Temperature log not found." >> "$CRITICAL_ALERTS"
+    fi
+
+    echo "" >> "$CRITICAL_ALERTS"
+    echo "============================================================" >> "$CRITICAL_ALERTS"
+
+    echo "[SUCCESS] Critical alerts saved to: $CRITICAL_ALERTS"
+    echo ""
+    echo "--- Preview ---"
+    cat "$CRITICAL_ALERTS"
+    echo "---------------"
+}
 # Member 6 (Facility Auditor) : water_audit()
 # ============================================================
 
@@ -93,7 +165,6 @@ water_audit() {
     echo "[SUCCESS] Water audit complete."
     echo ""
 }
-
 # =====================================
 # Execution Logic
 # =====================================

@@ -59,6 +59,17 @@ process_vitals() {
     echo ""
 }
 
+# ==============================================================
+# MEMBER 6: TAPIWANASHE KAMBARE [Facility Auditor]
+#
+# Reads the water usage log, filters rows for ICU_WATER_RESERVE,
+# and uses awk to compute:
+#   - Total readings
+#   - Average, peak, and minimum consumption (L/min)
+#   - Count and percentage of HIGH_USAGE events
+# Prints a formatted audit summary to the screen using printf.
+# ==============================================================
+
 water_audit() {
     echo "=============================================="
     echo "  [M6] ICU Water Reserve - Facility Audit"
@@ -72,17 +83,60 @@ water_audit() {
         return 1
     fi
 
-    # Filter only ICU_WATER_RESERVE rows from the water log.
-    # The log contains two devices; we isolate the one we care about.
-    echo "[INFO] Filtering ICU_WATER_RESERVE entries..."
-    local icu_rows
-    icu_rows=$(grep "ICU_WATER_RESERVE" "$WATER_LOG")
+    # ── AWK STATISTICS ENGINE ─────────────────────────────────
+    # Pipe ICU rows into awk for a single-pass calculation.
+    # -F '|'  sets pipe as the field delimiter.
+    #
+    # BEGIN block: initialise all accumulators before reading any line.
+    # Main block:  runs once per row.
+    #   gsub()    trims leading/trailing whitespace from field $3 (value)
+    #             and $4 (status) because the log format is " 38 " not "38".
+    #   val+0     coerces the string to a number.
+    #   Conditionals track max, min, and HIGH_USAGE count.
+    # END block:   prints five space-delimited results on one line so bash
+    #              can read them into variables with 'read'.
+    # ──────────────────────────────────────────────────────────
+    local awk_result
+    awk_result=$(grep "ICU_WATER_RESERVE" "$WATER_LOG" | awk -F '|' '
+    BEGIN {
+        sum        = 0
+        count      = 0
+        max_val    = 0
+        min_val    = 999999
+        high_usage = 0
+    }
+    {
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", $3)   # trim value field
+        gsub(/^[[:space:]]+|[[:space:]]+$/, "", $4)   # trim status field
 
-    echo "[INFO] Sample of ICU rows found:"
-    echo "$icu_rows" | head -5
-    echo ""
+        val = $3 + 0          # convert string to number
 
-    echo "[INFO] Commit 1 complete - grep filter working."
+        if (val > 0) {
+            sum  += val
+            count++
+            if (val > max_val) max_val = val
+            if (val < min_val) min_val = val
+            if ($4 == "HIGH_USAGE") high_usage++
+        }
+    }
+    END {
+        if (count > 0)
+            printf "%.2f %d %.2f %.2f %d", sum/count, count, max_val, min_val, high_usage
+        else
+            printf "0.00 0 0.00 0.00 0"
+    }')
+
+    # Parse the five space-separated values awk returned into bash variables
+    local avg count max_val min_val high_count
+    read -r avg count max_val min_val high_count <<< "$awk_result"
+
+    # Compute high-usage percentage in awk (bash can't do floating-point)
+    local pct_high="0.0"
+    if [ "$count" -gt 0 ]; then
+        pct_high=$(awk "BEGIN { printf \"%.1f\", ($high_count / $count) * 100 }")
+    fi
+
+    echo "[INFO] awk results: avg=$avg  count=$count  max=$max_val  min=$min_val  high=$high_count"
 }
 
 # =====================================

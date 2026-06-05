@@ -9,9 +9,9 @@
 
 ACTIVE_LOGS="./active_logs"
 REPORTS="./reports"
-HEART_RATE_LOG="$ACTIVE_LOGS/heart_rate.log"
-TEMP_LOG="$ACTIVE_LOGS/temperature.log"
-WATER_LOG="$ACTIVE_LOGS/water_usage.log"
+HEART_RATE_LOG="$ACTIVE_LOGS/heart_rate_log.log"
+TEMP_LOG="$ACTIVE_LOGS/temperature_log.log"
+WATER_LOG="$ACTIVE_LOGS/water_usage7_log.log"
 CRITICAL_ALERTS="$REPORTS/critical_alerts.txt"
 
 process_vitals() {
@@ -94,16 +94,37 @@ water_audit() {
     echo ""
 }
 
-echo ""
-echo "########################################################"
-echo "#     Kenyatta National Hospital — Analysis Engine     #"
-echo "########################################################"
-echo ""
-process_vitals
-water_audit
-echo "########################################################"
-echo "#              Analysis Complete                       #"
-echo "########################################################"
-echo ""
-# Script tested and verified
-# Script tested and verified
+# =====================================
+# Execution Logic
+# =====================================
+
+echo "====================================="
+echo "KNH Hospital Analysis System"
+echo "====================================="
+echo "1. Process Critical Vitals"
+echo "2. Water Audit"
+echo "3. Run Both"
+echo "4. Exit"
+echo "====================================="
+
+read -p "Enter your choice (1-4): " choice
+
+case $choice in
+    1)
+        process_vitals
+        ;;
+    2)
+        water_audit
+        ;;
+    3)
+        process_vitals
+        echo
+        water_audit
+        ;;
+    4)
+        echo "Exiting system..."
+        ;;
+    *)
+        echo "Invalid choice. Please enter a number between 1 and 4."
+        ;;
+esac

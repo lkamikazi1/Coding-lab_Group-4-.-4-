@@ -1,9 +1,10 @@
 #!/bin/bash
-# ============================================================
+#-------------------------------------------
 # KNH Hospital Admin Script
-# hospital_admin.sh
-# Members 1, 2, and 3
-# ============================================================
+# Members 1 (Derrick): The architect
+#Member 2 (Enzo): The security lead
+#Member 3 (Calvin): The orchestrator
+#--------------------------------------------
 
 # MEMBER 1: The Architect
 initialize_system() {
@@ -48,10 +49,7 @@ secure_data() {
     echo ""
 }
 
-# MEMBER 3: The Orchestrator-Calvin
-# This function calls initialize_system and secure_data in order.
-# If either function fails, the script exits immediately.
-# A log entry is saved to reports/admin_run.log on every successful run.
+# MEMBER 3: The Orchestrator
 main(){
 echo "Starting System Setup..."
     initialize_system || { echo "ERROR: Setup failed. Exiting."; exit 1; }

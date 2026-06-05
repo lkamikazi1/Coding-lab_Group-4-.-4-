@@ -49,8 +49,9 @@ secure_data() {
 }
 
 # MEMBER 3: The Orchestrator
+main(){
 echo "Starting System Setup..."
     initialize_system || { echo "ERROR: Setup failed. Exiting."; exit 1; }
     secure_data || { echo "ERROR: Security config failed. Exiting."; exit 1; }
     echo "System Environment Secured - $(date)"
-    echo "$(date): System secured by hospital_admin.sh" >> reports/admin_run.log
+    echo "$(date): System secured by hospital_admin.sh" >> reports/admin_run.log}

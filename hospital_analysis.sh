@@ -165,17 +165,38 @@ water_audit() {
     echo "[SUCCESS] Water audit complete."
     echo ""
 }
+# =====================================
+# Execution Logic
+# =====================================
 
-echo ""
-echo "########################################################"
-echo "#     Kenyatta National Hospital — Analysis Engine     #"
-echo "########################################################"
-echo ""
-process_vitals
-water_audit
-echo "########################################################"
-echo "#              Analysis Complete                       #"
-echo "########################################################"
-echo ""
-# Script tested and verified
-# Script tested and verified
+echo "====================================="
+echo "KNH Hospital Analysis System"
+echo "====================================="
+echo "1. Process Critical Vitals"
+echo "2. Water Audit"
+echo "3. Run Both"
+echo "4. Exit"
+echo "====================================="
+
+read -p "Enter your choice (1-4): " choice
+
+case $choice in
+    1)
+        process_vitals
+        ;;
+    2)
+        water_audit
+        ;;
+    3)
+        process_vitals
+        echo
+        water_audit
+        ;;
+    4)
+        echo "Exiting system..."
+        ;;
+    *)
+        echo "Invalid choice. Please enter a number between 1 and 4."
+        ;;
+esac
+

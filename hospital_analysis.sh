@@ -81,9 +81,9 @@ process_vitals() {
 
 ACTIVE_LOGS="./active_logs"
 REPORTS="./reports"
-HEART_RATE_LOG="$ACTIVE_LOGS/heart_rate.log"
-TEMP_LOG="$ACTIVE_LOGS/temperature.log"
-WATER_LOG="$ACTIVE_LOGS/water_usage.log"
+HEART_RATE_LOG="$ACTIVE_LOGS/heart_rate_log.log"
+TEMP_LOG="$ACTIVE_LOGS/temperature_log.log"
+WATER_LOG="$ACTIVE_LOGS/water_usage7_log.log"
 CRITICAL_ALERTS="$REPORTS/critical_alerts.txt"
 
 process_vitals() {
@@ -199,4 +199,3 @@ case $choice in
         echo "Invalid choice. Please enter a number between 1 and 4."
         ;;
 esac
-
